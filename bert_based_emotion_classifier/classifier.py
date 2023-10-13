@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 # 数据库路径
 dataset_path = r'D:\AkagawaTsurunaki\Dataset\.input\labeled_snsccb.json'
-model_save_path = r'D:\AkagawaTsurunaki\Dataset\Classifier\models\nana_clean1.parameters'
+model_save_path = r'D:\AkagawaTsurunaki\Dataset\Classifier\models\feebor.parameters'
 pretrained_name = r'D:\AkagawaTsurunaki\Models\bert-base-chinese'
 output_dim = 28  # 因为我们划分了28种情感, 所以这里选择28
 split = 0.9
