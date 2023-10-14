@@ -1,4 +1,5 @@
 import os, sys
+import random
 import threading
 
 import gradio as gr
@@ -72,18 +73,26 @@ def parse_text(text):
     return text
 
 
+stop_flag = False
+
 
 def predict(input, chatbot, max_length, top_p, temperature, history):
+    global stop_flag
     chatbot.append((parse_text(input), ""))
     for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
                                                temperature=temperature):
         chatbot[-1] = (parse_text(input), parse_text(response))
 
+        if stop_flag:
+            stop_flag = False
+            raise gr.Info("强制性响应中止")
+
         yield chatbot, history
 
 
 def stop():
-    pass
+    global stop_flag
+    stop_flag = True
 
 
 def reset_user_input():
@@ -95,34 +104,32 @@ def reset_state():
 
 
 with gr.Blocks() as demo:
-    gr.HTML("""<h1 align="center">Akako</h1>
+    gr.HTML("""<h1 align="center">❤️‍🔥 Chat Akako ❤️‍🔥</h1>
     """)
-
     gr.Markdown("""
-❤️‍🔥 May Aka Light Always Surround You ❤️‍🔥
-
-❤️‍🔥 赤赤的光永远环绕着你 ❤️‍🔥
-
 当前加载模型：`Akako-int8-4.0Msamples\checkpoint-17850`
 
 1. 如果跟我聊天的人数过多，您的请求可能不会立即响应，请您理解😊
-2. 我可能会输出意料之外的言语，包括但不限于咒骂、侮辱、讽刺、脏话，请您原谅🙏
-3. 如果我一直重复同一句话，请单击“清除历史”按钮🗑️
-
+2. 我有时会胡言乱语，包括但不限于咒骂、侮辱、讽刺、脏话，请您原谅🙏
+3. 如果我一直在重复，单击“停止响应”按钮以强制中断我的对话🫢
+4. 如果你想要清除我的记忆，单击“清除历史”按钮🗑️
     """)
+
+    welcome = ['欢迎来和我聊天！🤗', '想要聊些什么吗！☺️', '你好呀！想聊点什么呢？😉']
 
     chatbot = gr.Chatbot()
     with gr.Row():
         with gr.Column(scale=4):
             with gr.Column(scale=12):
-                user_input = gr.Textbox(show_label=False, placeholder="来说点啥吧……", lines=10).style(
+                user_input = gr.Textbox(show_label=False, placeholder=random.choice(welcome), lines=5).style(
                     container=False)
             with gr.Column(min_width=32, scale=1):
                 with gr.Row():
-                    submitBtn = gr.Button("发送", variant="primary")
                     stopBtn = gr.Button("停止响应", variant="stop")
+                    emptyBtn = gr.Button("清除历史")
+                    submitBtn = gr.Button("发送消息", variant="primary")
         with gr.Column(scale=1):
-            emptyBtn = gr.Button("清除历史")
+            # max_length = gr.Slider(0, 4096, value=512, step=1.0, label="最大长度", interactive=False)
             max_length = gr.Slider(0, 4096, value=512, step=1.0, label="最大长度", interactive=False)
             top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="创造力", interactive=True)
             temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="热情值", interactive=True)
@@ -134,8 +141,6 @@ with gr.Blocks() as demo:
     submitBtn.click(reset_user_input, [], [user_input])
 
     emptyBtn.click(reset_state, outputs=[chatbot, history], show_progress=True)
-
-
 
 
 def main():
