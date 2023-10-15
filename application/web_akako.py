@@ -106,10 +106,7 @@ def reset_state():
 with gr.Blocks() as demo:
     gr.HTML("""<h1 align="center">❤️‍🔥 Chat Akako - 内测版 ❤️‍🔥</h1>
     """)
-    gr.Markdown("""
-> 🔥 赤赤的光永远环绕着你 🔥
-> 🔥 May Aka Light Always Surround You 🔥
-    
+    gr.Markdown("""  
 当前加载模型：`Akako-int8-4.0Msamples\checkpoint-17850`
 
 1. 如果跟我聊天的人数过多，您的请求可能不会立即响应，请您理解 😊
@@ -117,8 +114,6 @@ with gr.Blocks() as demo:
 3. 如果我一直在重复，单击“停止响应”按钮以强制中断我的对话 🫢
 4. 如果你想要清除我的记忆，单击“清除历史”按钮 🗑️
 5. 您可以调整创造力和热情值使我达到不同的对话效果 😎
-
-
     """)
 
     welcome = ['欢迎来和我聊天！🤗', '想要聊些什么吗！☺️', '你好呀！想聊点什么呢？😉']
@@ -131,9 +126,9 @@ with gr.Blocks() as demo:
                     container=False)
             with gr.Column(min_width=32, scale=1):
                 with gr.Row():
-                    stopBtn = gr.Button("停止响应", variant="stop")
-                    emptyBtn = gr.Button("清除历史")
-                    submitBtn = gr.Button("发送消息", variant="primary")
+                    submitBtn = gr.Button("📤️发送消息", variant="primary")
+                    stopBtn = gr.Button("⏹️停止响应", variant="stop")
+                    emptyBtn = gr.Button("🗑️清除历史")
         with gr.Column(scale=1):
             # max_length = gr.Slider(0, 4096, value=512, step=1.0, label="最大长度", interactive=False)
             max_length = gr.Slider(0, 4096, value=512, step=1.0, label="最大长度", interactive=False)
@@ -191,7 +186,7 @@ def main():
         model.transformer.prefix_encoder.float().cuda()
 
     model = model.eval()
-    demo.queue().launch(share=False, inbrowser=True)
+    demo.queue().launch(share=True, inbrowser=True)
 
 
 if __name__ == "__main__":
